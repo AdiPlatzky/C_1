@@ -22,7 +22,7 @@ namespace graph
 
 class Algorithms {
     public:
-    static Node** restart_Nodes(const Graph& graph);
+    static Node** restart_Nodes(const Graph& graph, bool print_white);
     static void cleanup_Nodes(Node** nodes, int n);
 
     Graph bfs(const Graph& graph, Node_V* nodes);

@@ -13,13 +13,14 @@ namespace graph
 {
     int time_global;
 
-    Node** Algorithms::restart_Nodes(const Graph& graph)
+    Node** Algorithms::restart_Nodes(const Graph& graph, bool print_white = true)
     {
         int n = graph.num_vertices;
         Node** nodes = new Node*[n];
         for (int i = 0; i < n; ++i) {
             nodes[i] = new Node(graph.nodes[i], INF, nullptr);
-            nodes[i]->color = "white";
+            if (print_white)
+                nodes[i]->color = "white";
         }
         return nodes;
     }
@@ -69,6 +70,7 @@ namespace graph
         }
 
         Algorithms::cleanup_Nodes(nodes, n);
+        return bfs_tree;
     }
 
 
@@ -86,8 +88,6 @@ namespace graph
         cleanup_Nodes(nodes, n);
         return dfs_tree;
     }
-
-
 
 
     void Algorithms::DFS_visit(int u_id, const Graph &graph, Node **node, Graph& dfs_tree)
@@ -111,6 +111,15 @@ namespace graph
         node[u_id]->color = "black";
         node[u_id]->f_v = time_global++;
     }
+
+    Graph Algorithms::dijkstra(const Graph &graph, Node_V *nodes) {
+        int n = graph.num_vertices;
+        Graph dijkstra_tree(n);
+
+    }
+
+
+
 
 
 
