@@ -17,4 +17,6 @@ add_executable(C__1 main.cpp
         Helpers.h
         UnionFind.cpp
         UnionFind.h
+        EdgeList.cpp
+        EdgeList.h
 )

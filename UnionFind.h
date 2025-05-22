@@ -9,15 +9,13 @@
 namespace graph {
 
 class UnionFind {
-    public:
+    //public:
     int* parent;
     int* rank;
-    int* size;
-
+    //int* size;
+public:
     UnionFind(int num_vertices);
     ~UnionFind();
-
-    void Create(int s);
     int Find(int v);
     void Union(int u, int v);
     bool Connected(int u, int v);

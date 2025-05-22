@@ -6,9 +6,11 @@
 
 #include <queue>
 
+#include "EdgeList.h"
 #include "Graph.h"
 #include "PriorityQueue.h"
 #include "Queue.h"
+#include "UnionFind.h"
 
 namespace graph {
     int time_global;
@@ -17,7 +19,7 @@ namespace graph {
     {
         int n = graph.num_vertices;
         Node** nodes = new Node*[n];
-        for (int i = 0; i < n; ++i) {
+        for (int i = 0; i < n; i++) {
             nodes[i] = new Node(graph.nodes[i], INF, nullptr);
             if (print_white)
                 nodes[i]->color = "white";
@@ -116,19 +118,80 @@ namespace graph {
         node[u_id]->f_v = time_global++;
     }
 
-    Graph Algorithms::dijkstra(const Graph &graph, Node_V *node_s) {
+    Graph Algorithms::dijkstra(const Graph &graph, Node_V *node_s)
+    {
         int n = graph.num_vertices;
         Graph dijkstra_tree(n);
-        PriorityQueue();
-
         Node** nodes = restart_Nodes(graph, false);
         nodes[node_s->get_id()]->d_v = 0;
 
+        PriorityQueue Q = PriorityQueue();
 
+        for (int i = 0; i < n; i++) {
+            Q.insert(graph.nodes[i], nodes[i]->d_v, nodes[i]->parent);
+        }
 
+        while (!Q.isEmpty()) {
+            Node_V* u = Q.extractMin();
+            int u_id = u->get_id();
+
+            Neighbor* neighbor = graph.adjacency_list[u_id];
+            while (neighbor != nullptr) {
+                int v_id = neighbor->dest;
+                int newWeight = nodes[u_id]->d_v + neighbor->weight();
+
+                if (newWeight < nodes[v_id]->d_v) {
+                    nodes[v_id]->d_v = newWeight;
+                    nodes[v_id]->parent = u;
+
+                    Q.decreaseKey(graph.nodes[v_id], newWeight, u);
+                }
+                neighbor = neighbor->next;
+            }
+        }
+
+        for (int i = 0; i < n; i++) {
+            Node_V* parent = nodes[i]->parent;
+            if (parent != nullptr) {
+                dijkstra_tree.add_Edge(parent->get_id(), i);
+            }
+        }
+        cleanup_Nodes(nodes, n);
+        return dijkstra_tree;
     }
 
-    Graph Algorithms::kruskal(const Graph &graph) {
+    Graph Algorithms::kruskal(const Graph &graph)
+    {
+        int n = graph.num_vertices;
+        Graph kruskal_tree(n);
+
+        EdgeList edges; // איסוף של הצלעות
+        for (int u = 0; u < n; u++) {
+            Neighbor* neighbor = graph.adjacency_list[u];
+            while (neighbor != nullptr) {
+                int v = neighbor->dest;
+                int weight = neighbor->weight();
+
+                if (u < v) {
+                    edges.add(Edge(u, v, weight)); // כדי למנוע כפילויות של צלעות!!
+                }
+                neighbor = neighbor->next;
+            }
+        }
+
+        edges.sort(); // מיון הצלעות לפי משקל
+
+        UnionFind unionFind(); // לצור זיהוי רכיבי קשירות
+
+        for (int i = 0; i < n; i++) { //נעבור על כל הצלעות לפי הסדר
+            Edge e = edges.get(i);
+
+            if (!unionFind().Connected(e.u, e.v)) {
+                unionFind().Union(e.u, e.v);
+                kruskal_tree.add_Edge(e.u, e.v, e.weight);
+            }
+        }
+        return kruskal_tree;
     }
         // פה אני רוצה לבצע מיון של הצלעות בסדר עולה כך שם הקשת בעלת המקך הנמוך ביותר תהיה הראשונה
         //  *ואז אני רוצה ליצור גרף לתשובה שיכיל לבסוף את כל הקודקודים מהגרף המקורי אבל לא עם כל צלעות!
@@ -137,8 +200,18 @@ namespace graph {
         //  *ולאחר מכן אעשה בדיקה - אם 2-1 מקודקודי הקשת הבאה בתור לא נמצאים בגרף החדש - נוסיף את הקשת
         //  *אחרת הקשת הזו תסגור לנו מעגל ולכן לא נוסיך אותה ונעבור לקשת הבאה בתור
         //  *לאחר שעברנו על כל הקשתות נחזיר את הגרך החדש שנוצר לנו :)
-    Graph Algorithms::prim(const Graph &graph) {
 
+    Graph Algorithms::prim(const Graph &graph)
+    {
+        int n = graph.num_vertices;
+        Graph prim_tree(n);
+        Node** nodes = restart_Nodes(graph, false);
+
+        int sour
+
+        for (int i = 0; i < n; i++) {
+
+        }
     }
 
 
