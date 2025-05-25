@@ -3,6 +3,7 @@
 //
 
 #include "Algorithms.h"
+#include <ctime>
 
 #include <queue>
 
@@ -138,7 +139,7 @@ namespace graph {
             Neighbor* neighbor = graph.adjacency_list[u_id];
             while (neighbor != nullptr) {
                 int v_id = neighbor->dest;
-                int newWeight = nodes[u_id]->d_v + neighbor->weight();
+                int newWeight = nodes[u_id]->d_v + neighbor->weight;
 
                 if (newWeight < nodes[v_id]->d_v) {
                     nodes[v_id]->d_v = newWeight;
@@ -170,7 +171,7 @@ namespace graph {
             Neighbor* neighbor = graph.adjacency_list[u];
             while (neighbor != nullptr) {
                 int v = neighbor->dest;
-                int weight = neighbor->weight();
+                int weight = neighbor->weight;
 
                 if (u < v) {
                     edges.add(Edge(u, v, weight)); // כדי למנוע כפילויות של צלעות!!
@@ -181,13 +182,13 @@ namespace graph {
 
         edges.sort(); // מיון הצלעות לפי משקל
 
-        UnionFind unionFind(); // לצור זיהוי רכיבי קשירות
+        UnionFind unionFind(n); // לצור זיהוי רכיבי קשירות
 
         for (int i = 0; i < n; i++) { //נעבור על כל הצלעות לפי הסדר
             Edge e = edges.get(i);
 
-            if (!unionFind().Connected(e.u, e.v)) {
-                unionFind().Union(e.u, e.v);
+            if (!unionFind.Connected(e.u, e.v)) {
+                unionFind.Union(e.u, e.v);
                 kruskal_tree.add_Edge(e.u, e.v, e.weight);
             }
         }
@@ -205,21 +206,54 @@ namespace graph {
     {
         int n = graph.num_vertices;
         Graph prim_tree(n);
-        Node** nodes = restart_Nodes(graph, false);
 
-        int sour
+        srand(time(NULL));
+        int s = rand() % n;
 
-        for (int i = 0; i < n; i++) {
+        Node_V* u = graph.nodes[s];
+        Node** nodes = restart_Nodes(graph);
 
+        nodes[s]->d_v = 0;
+        PriorityQueue Q;
+
+        for (int i = 0; i < n; i++)
+        {
+          Q.insert(graph.nodes[i], nodes[i]->d_v, nullptr);
         }
+        while (!Q.isEmpty())
+        {
+          Node_V* u = Q.extractMin();
+          int u_id = u->get_id();
+
+          nodes[u_id]->color = "black";
+
+          Neighbor* neighbor = graph.adjacency_list[u_id];
+          while (neighbor != nullptr)
+          {
+            int v_id = neighbor->dest;
+            int weight = neighbor->weight;
+
+            if(nodes[v_id]->color != "black" && weight < nodes[v_id]->d_v)
+            {
+              nodes[v_id]->d_v = weight;
+              nodes[v_id]->parent = u;
+
+              Q.decreaseKey(graph.nodes[v_id], weight, u);
+            }
+            neighbor = neighbor->next;
+          }
+        }
+        for (int v = 0; v < n; v++)
+        {
+          Node_V* parent = nodes[v]->parent;
+          if (parent != nullptr)
+          {
+            int u = parent->get_id();
+            prim_tree.add_Edge(u, v, nodes[v]->d_v);
+          }
+        }
+        cleanup_Nodes(nodes, n);
+        return prim_tree;
     }
-
-
-
-
-
-
-
-
 
 } // graph

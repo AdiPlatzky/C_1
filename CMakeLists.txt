@@ -1,9 +1,9 @@
-cmake_minimum_required(VERSION 3.30)
+cmake_minimum_required(VERSION 3.28.3)
 project(C__1)
 
 set(CMAKE_CXX_STANDARD 20)
 
-add_executable(C__1 main.cpp
+add_executable(RunMain main.cpp
         Graph.cpp
         Graph.h
         Node_V.cpp
@@ -19,4 +19,6 @@ add_executable(C__1 main.cpp
         UnionFind.h
         EdgeList.cpp
         EdgeList.h
+        #tests/graph_test.cpp
+
 )

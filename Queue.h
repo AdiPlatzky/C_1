@@ -13,7 +13,7 @@ namespace graph {
         Node_In_Queue* next_n;
         Node_In_Queue* prev_n;
 
-        Node_In_Queue(Node_V* original, Node_In_Queue* next_n = nullptr, Node_In_Queue* prev_n)
+        Node_In_Queue(Node_V* original, Node_In_Queue* next_n = nullptr, Node_In_Queue* prev_n = nullptr)
         : original(original), next_n(next_n), prev_n(prev_n) {}
     };
 

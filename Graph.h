@@ -6,8 +6,10 @@
 #include "Node_V.h"
 #include "Helpers.h"
 
-namespace graph {
-    struct Neighbor {
+namespace graph
+{
+    struct Neighbor
+{
         int dest;
         int weight;
         Neighbor* next; // מצביע על מי שהקודם הצביע עליו

@@ -6,7 +6,19 @@
 
 namespace graph
 {
-    Queue::Queue(Node_In_Queue *head, Node_In_Queue *tail): head(head), tail(tail), size(0) {}
+    Queue::Queue(Node_In_Queue *head, Node_In_Queue *tail): head(head), tail(tail), size(0) {
+
+    }
+    Queue::~Queue() {
+        Node_In_Queue* current = head;
+        while (current != nullptr) {
+            Node_In_Queue* next = current->next_n;
+            delete current;
+            current = next;
+        }
+        head = nullptr;
+    }
+
     void Queue::enqueue(Node_V *node)
     {
         Node_In_Queue *newNode = new Node_In_Queue(node);

@@ -29,7 +29,7 @@ namespace graph
         delete[] nodes;
     }
 
-    void Graph::add_Edge(int from, int to, int weight)
+    void Graph::add_Edge(int from, int to, int weight) const
     {
         if (from < 0 || from >= num_vertices || to < 0 || to >= num_vertices)
             throw "Invalid vertex index";
@@ -38,7 +38,7 @@ namespace graph
         adjacency_list[to] = new Neighbor(from, weight, adjacency_list[to]);
     }
 
-    void Graph::remove_Edge(int from, int to)
+    void Graph::remove_Edge(int from, int to) const
     {
         if (from < 0 || from >= num_vertices || to < 0 || to >= num_vertices)
             throw "Invalid vertex index";
