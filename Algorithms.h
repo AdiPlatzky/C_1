@@ -17,7 +17,7 @@ namespace graph
         Node_V* parent;
         std::string color;
 
-        Node(Node_V* node_v, int d_v, Node_V* parent) : node_v(node_v), d_v(d_v), f_v(f_v), parent(parent), color("") {}
+        Node(Node_V* node_v, int d_v, Node_V* parent) : node_v(node_v), d_v(d_v), f_v(0), parent(parent), color("") {}
     };
 
 class Algorithms {
@@ -32,7 +32,7 @@ class Algorithms {
     Graph dfs(const Graph& graph, Node_V* nodes);
     Graph dijkstra(const Graph& graph, Node_V* nodes);
     Graph prim(const Graph& graph);
-    Graph kruskal(const Graph& graph);
+    static Graph kruskal(const Graph& graph);
 };
 
 } // graph

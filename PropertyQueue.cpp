@@ -2,20 +2,20 @@
 // Created by 12adi on 09/04/2025.
 //
 
-#include "PriorityQueue.h"
+#include "PropertyQueue.h"
 #include <stdexcept>
 #include "Helpers.h"
 
 namespace graph {
-    PriorityQueue::PriorityQueue() : head(nullptr) {}
+    PropertyQueue::PropertyQueue() : head(nullptr) {}
 
-    PriorityQueue::~PriorityQueue() {
+    PropertyQueue::~PropertyQueue() {
         while (head != nullptr) {
             deleteAndAdvance(head);
         }
     }
 
-    void PriorityQueue::insert(Node_V* node_v, int priority, Node_V* parent_v)
+    void PropertyQueue::insert(Node_V* node_v, int priority, Node_V* parent_v)
     {
         PQNode* newNode = new PQNode(node_v, priority, parent_v);
 
@@ -33,7 +33,7 @@ namespace graph {
         curr->next = newNode;
     }
 
-    Node_V* PriorityQueue::extractMin()
+    Node_V* PropertyQueue::extractMin()
     {
         if (head == nullptr)
             throw "priority queue is empty";
@@ -43,12 +43,12 @@ namespace graph {
         return minD;
     }
 
-    bool PriorityQueue::isEmpty() const
+    bool PropertyQueue::isEmpty() const
     {
         return head == nullptr;
     }
 
-    void PriorityQueue::decreaseKey(Node_V* node_v, int new_priority, Node_V* newParent_v) {
+    void PropertyQueue::decreaseKey(Node_V* node_v, int new_priority, Node_V* newParent_v) {
         if (head == nullptr) return;
         PQNode* curr = head;
         PQNode* prev = nullptr;
@@ -73,17 +73,18 @@ namespace graph {
         insert(node_v, new_priority, newParent_v);
     }
 
-    bool PriorityQueue::contains(Node_V* node_v) {
+    bool PropertyQueue::contains(Node_V* node_v) {
         PQNode* curr = head;
         while (curr != nullptr) {
             if (curr->node == node_v) {
                 return true;
             }
+            curr = curr->next;
         }
         return false;
     }
 
-    Node_V* PriorityQueue::getParent(Node_V* node_v)const {
+    Node_V* PropertyQueue::getParent(Node_V* node_v)const {
         PQNode* curr = head;
         while (curr != nullptr) {
             if (curr->node == node_v) {

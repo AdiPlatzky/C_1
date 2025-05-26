@@ -19,7 +19,8 @@ namespace graph
 
     Graph::~Graph()
     {
-        for (int i = 0; i < num_vertices; ++i) {
+        for (int i = 0; i < num_vertices; i++) {
+            delete nodes[i];
             Neighbor* curr = adjacency_list[i];
             while (curr != nullptr) {
                 deleteAndAdvance(curr);

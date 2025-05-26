@@ -1,13 +1,12 @@
 //
 // Created by 12adi on 09/04/2025.
 //
-
 #ifndef PRIORITYQUEUE_H
 #define PRIORITYQUEUE_H
 #include "Graph.h"
 
 namespace graph {
-    class PriorityQueue {
+    class PropertyQueue {
         struct PQNode {
             Node_V *node;
             int d;
@@ -22,8 +21,8 @@ namespace graph {
         PQNode *head;
 
     public:
-        PriorityQueue();
-        ~PriorityQueue();
+        PropertyQueue();
+        ~PropertyQueue();
 
         void insert(Node_V *node_v, int priority, Node_V *parent_v);
         Node_V *extractMin();

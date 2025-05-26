@@ -12,13 +12,20 @@ add_executable(RunMain main.cpp
         Algorithms.h
         Queue.cpp
         Queue.h
-        PriorityQueue.cpp
-        PriorityQueue.h
+        PropertyQueue.cpp
+        PropertyQueue.h
         Helpers.h
         UnionFind.cpp
         UnionFind.h
         EdgeList.cpp
         EdgeList.h
+        tests/algorithms_test.cpp
+        tests/node_v_test.cpp
+        tests/unionFind_test.cpp
+        tests/queue_test.cpp
+        tests/propertyQueue_test.cpp
+        tests/helpers_test.cpp
+        tests/edgeList_test.cpp
         #tests/graph_test.cpp
 
 )

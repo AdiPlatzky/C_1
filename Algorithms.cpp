@@ -9,7 +9,7 @@
 
 #include "EdgeList.h"
 #include "Graph.h"
-#include "PriorityQueue.h"
+#include "PropertyQueue.h"
 #include "Queue.h"
 #include "UnionFind.h"
 
@@ -126,7 +126,7 @@ namespace graph {
         Node** nodes = restart_Nodes(graph, false);
         nodes[node_s->get_id()]->d_v = 0;
 
-        PriorityQueue Q = PriorityQueue();
+        PropertyQueue Q = PropertyQueue();
 
         for (int i = 0; i < n; i++) {
             Q.insert(graph.nodes[i], nodes[i]->d_v, nodes[i]->parent);
@@ -214,7 +214,7 @@ namespace graph {
         Node** nodes = restart_Nodes(graph);
 
         nodes[s]->d_v = 0;
-        PriorityQueue Q;
+        PropertyQueue Q;
 
         for (int i = 0; i < n; i++)
         {
