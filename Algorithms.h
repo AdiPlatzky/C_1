@@ -25,13 +25,13 @@ class Algorithms {
     static Node** restart_Nodes(const Graph& graph, bool print_white);
     static void cleanup_Nodes(Node** nodes, int n);
 
-    Graph bfs(const Graph& graph, Node_V* nodes);
+    static Graph bfs(const Graph& graph, Node_V* nodes);
 
-    void DFS_visit(int source_id, const Graph & graph, Node ** node, Graph& dfs_tree);
+    static void DFS_visit(int source_id, const Graph & graph, Node ** node, Graph& dfs_tree);
 
-    Graph dfs(const Graph& graph, Node_V* nodes);
-    Graph dijkstra(const Graph& graph, Node_V* nodes);
-    Graph prim(const Graph& graph);
+    static Graph dfs(const Graph& graph, Node_V* nodes);
+    static Graph dijkstra(const Graph& graph, Node_V* nodes);
+    static Graph prim(const Graph& graph);
     static Graph kruskal(const Graph& graph);
 };
 

@@ -210,7 +210,7 @@ namespace graph {
         srand(time(NULL));
         int s = rand() % n;
 
-        Node_V* u = graph.nodes[s];
+        //Node_V* u = graph.nodes[s];
         Node** nodes = restart_Nodes(graph);
 
         nodes[s]->d_v = 0;

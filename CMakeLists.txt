@@ -26,6 +26,7 @@ add_executable(RunMain main.cpp
         tests/propertyQueue_test.cpp
         tests/helpers_test.cpp
         tests/edgeList_test.cpp
+        tests/memory_test.cpp
         #tests/graph_test.cpp
 
 )

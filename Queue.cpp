@@ -57,7 +57,7 @@ namespace graph
         return node;
     }
 
-    bool Queue::is_empty() {
+    bool Queue::is_empty()const {
         if (size == 0) {
             return true;
         }

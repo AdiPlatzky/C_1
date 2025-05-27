@@ -30,6 +30,7 @@ namespace graph
         void add_Edge(int from, int to, int weight = 1) const;
         void remove_Edge(int from, int to) const;
         void print_graph() const;
+        int getNumVertices() const {return num_vertices;}
     };
 } // graph
 

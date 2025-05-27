@@ -29,9 +29,6 @@ class Queue {
 
     void enqueue(Node_V* node);
     Node_V* dequeue();
-
-    bool is_empty();
-
     bool is_empty() const;
 
 
