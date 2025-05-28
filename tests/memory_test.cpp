@@ -4,12 +4,14 @@
 #include "doctest.h"
 #include "../Graph.h"
 #include "../Algorithms.h"
+#include "../Queue.h"
 
 using namespace graph;
 
-TEST_SUITE("Memory Management Tests") {
-
-    TEST_CASE("Graph destruction with many edges") {
+TEST_SUITE("Memory Management Tests")
+{
+    TEST_CASE("Graph destruction with many edges")
+    {
         {
             Graph g(100);
 
@@ -37,7 +39,8 @@ TEST_SUITE("Memory Management Tests") {
         CHECK(true);  // אם הגענו לכאן, לא היה crash
     }
 
-    TEST_CASE("Algorithm trees cleanup") {
+    TEST_CASE("Algorithm trees cleanup")
+    {
         Graph g(50);
 
         // בנה גרף מחובר
@@ -61,29 +64,23 @@ TEST_SUITE("Memory Management Tests") {
         CHECK(true);  // בדיקה שלא היה crash
     }
 
-    // TEST_CASE("Queue stress test") {
-    //     {
-    //         Queue q;
-    //         std::vector<Node_V*> nodes;
-    //
-    //         // צור הרבה nodes
-    //         for(int i = 0; i < 1000; i++) {
-    //             nodes.push_back(new Node_V(i));
-    //             q.enqueue(nodes[i]);
-    //         }
-    //
-    //         // הוצא הכל
-    //         for(int i = 0; i < 1000; i++) {
-    //             Node_V* extracted = q.dequeue();
-    //             CHECK(extracted->get_id() == i);
-    //         }
-    //
-    //         // נקה את ה-nodes
-    //         for(Node_V* node : nodes) {
-    //             delete node;
-    //         }
-    //     }
-    //
-    //     CHECK(true);
-    // }
+    TEST_CASE("Queue stress test") {
+        Queue q;
+        Node_V *nodes[1000];
+        for (int i = 0; i < 1000; i++) {
+            nodes[i] = new Node_V(i);
+            q.enqueue(nodes[i]);
+        }
+
+        for (int i = 0; i < 1000; i++) {
+            Node_V *extracted = q.dequeue();
+            CHECK(extracted->get_id() == i);
+        }
+
+        for(Node_V* node : nodes) {
+            delete node;
+        }
+        CHECK(true);
+    }
+
 }

@@ -1,7 +1,6 @@
 //
 // Created by 12adi on 26/05/2025.
 //
-// #define DOCTEST_CONFIG_IMPLEMENT_WITH_MAIN
 #include "doctest.h"
 #include "../Node_V.h"
 

@@ -142,28 +142,25 @@ TEST_SUITE("PropertyQueue Edge Cases")
         delete a; delete b;
     }
 
-    // TEST_CASE("Large queue stress test")
-    // {
-    //     PropertyQueue pq;
-    //     std::vector<Node_V*> nodes;
-    //
-    //     // צור 1000 nodes
-    //     for(int i = 0; i < 1000; i++) {
-    //         nodes.push_back(new Node_V(i));
-    //         pq.insert(nodes[i], 1000 - i, nullptr);  // עדיפות הפוכה
-    //     }
+    TEST_CASE("Large queue stress test")
+    {
+        PropertyQueue pq;
+        Node_V* nodes[1000];
+        for(int i = 0; i < 1000; i++) {
+            nodes[i] = new Node_V(i);
+            pq.insert(nodes[i], 1000 - i, nullptr);  // עדיפות הפוכה
+    }
     //
     //     // בדוק שהתור מוציא בסדר הנכון
-    //     for(int i = 999; i >= 0; i--) {
-    //         Node_V* extracted = pq.extractMin();
-    //         CHECK(extracted->get_id() == i);
-    //     }
-    //
-    //     CHECK(pq.isEmpty());
-    //
+    for(int i = 999; i >= 0; i--) {
+        Node_V* extracted = pq.extractMin();
+        CHECK(extracted->get_id() == i);
+    }
+    CHECK(pq.isEmpty());
+
     //     // נקה זיכרון
-    //     for(Node_V* node : nodes) {
-    //         delete node;
-    //     }
-    // }
+        for(Node_V* node : nodes) {
+            delete node;
+        }
+    }
 }
