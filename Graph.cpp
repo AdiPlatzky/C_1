@@ -1,11 +1,13 @@
 //
-// Created by 12adi on 08/04/2025.
+// 12adi45@gmail.com
 //
 #include "Graph.h"
 #include <iostream>
 
 namespace graph
 {
+    // בנאי - יצירת גרף חדש עם n קודקודים וללא קשתות
+    // מאתחל גם את מערך הקודקודים וגם את רשימות השכנויות כ-nullptr
     Graph::Graph(int num_vertices): num_vertices(num_vertices)
     {
         nodes = new Node_V*[num_vertices];
@@ -17,6 +19,8 @@ namespace graph
             adjacency_list[i] = nullptr;
     }
 
+    // הורס את כל מבני הנתונים של הגרף
+    // משחרר את מערך הקודקודים ואת כל רשימות השכנויות
     Graph::~Graph()
     {
         for (int i = 0; i < num_vertices; i++) {
@@ -30,6 +34,8 @@ namespace graph
         delete[] nodes;
     }
 
+    // מוסיף קשת דו-כיוונית בין שני קודקודים עם משקל
+    // מוסיף את הקשת גם למקור וגם ליעד ברשימות השכנויות
     void Graph::add_Edge(int from, int to, int weight) const
     {
         if (from < 0 || from >= num_vertices || to < 0 || to >= num_vertices)
@@ -39,6 +45,8 @@ namespace graph
         adjacency_list[to] = new Neighbor(from, weight, adjacency_list[to]);
     }
 
+    // מסיר קשת דו-כיוונית בין שני קודקודים (אם קיימת)
+    // בודק האם הקשת קיימת ומסיר אותה משני הצדדים
     void Graph::remove_Edge(int from, int to) const
     {
         if (from < 0 || from >= num_vertices || to < 0 || to >= num_vertices)
@@ -46,6 +54,7 @@ namespace graph
 
         bool removed1 = false, removed2 = false;
 
+        // הסרה מרשימת השכנים של from
         Neighbor* next_v = adjacency_list[from];
         Neighbor* prev = nullptr;
         while (next_v != nullptr)
@@ -68,6 +77,7 @@ namespace graph
             next_v = next_v->next;
         }
 
+        // הסרה מרשימת השכנים של to
         Neighbor* revers_v = adjacency_list[to];
         Neighbor* revers_prev = nullptr;
         while (revers_v != nullptr)
@@ -94,6 +104,8 @@ namespace graph
             throw "Edge does not exist";
     }
 
+    // מדפיס את כל הקשתות בגרף (ללא כפילויות)
+    // מדפיס רק קשתות מהקודקודים עם מזהה קטן יותר לגדול יותר
     void Graph::print_graph() const
     {
         for (int i = 0; i < num_vertices; ++i)

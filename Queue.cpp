@@ -1,14 +1,15 @@
 //
-// Created by 12adi on 09/04/2025.
+// 12adi45@gmail.com
 //
 
 #include "Queue.h"
 
 namespace graph
 {
-    Queue::Queue(Node_In_Queue *head, Node_In_Queue *tail): head(head), tail(tail), size(0) {
+    // בנאי שמאתחל תור ריק
+    Queue::Queue(Node_In_Queue *head, Node_In_Queue *tail): head(head), tail(tail), size(0) {}
 
-    }
+    //פעולת הרס – מנקה את כל האיברים מהתור ומשחררת את הזיכרון
     Queue::~Queue() {
         Node_In_Queue* current = head;
         while (current != nullptr) {
@@ -19,6 +20,7 @@ namespace graph
         head = nullptr;
     }
 
+    // הוספת איבר חדש לסוף התור
     void Queue::enqueue(Node_V *node)
     {
         Node_In_Queue *newNode = new Node_In_Queue(node);
@@ -34,6 +36,8 @@ namespace graph
         size++;
     }
 
+    // פעולת הוצאה - מוציאה את האיבר הראשון מהתור ומחזירה אותו
+    //  אם התור ריק – נזרקת חריגה
     Node_V *Queue::dequeue()
     {
         if (is_empty())
@@ -57,6 +61,7 @@ namespace graph
         return node;
     }
 
+    // מחזירה true אם אין אף איבר בתור
     bool Queue::is_empty()const {
         if (size == 0) {
             return true;

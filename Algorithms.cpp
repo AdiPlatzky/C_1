@@ -1,12 +1,11 @@
 //
-// Created by 12adi on 09/04/2025.
+// 12adi45@gmail.com
 //
 
 #include "Algorithms.h"
 #include <ctime>
 
 #include <queue>
-
 #include "EdgeList.h"
 #include "Graph.h"
 #include "PropertyQueue.h"
