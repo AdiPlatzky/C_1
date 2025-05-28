@@ -69,11 +69,11 @@ set(TEST_SOURCES
         tests/graph_test.cpp
 )
 
-# ===== יעד 1: המטלה המקורית (קונסולה) =====
-add_executable(OriginalGraphSystem
-        main_original.cpp  # גיבוי של ה-main המקורי אם יש
-        ${CORE_SOURCES}
-)
+## ===== יעד 1: המטלה המקורית (קונסולה) =====
+#add_executable(OriginalGraphSystem
+#        main_original.cpp  # גיבוי של ה-main המקורי אם יש
+#        ${CORE_SOURCES}
+#)
 
 # ===== יעד 2: מערכת הבדיקות =====
 add_executable(GraphTests

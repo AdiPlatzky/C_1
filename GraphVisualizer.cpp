@@ -398,13 +398,24 @@ void GraphVisualizer::runBFS(int startNodeId) {
     resetVisualization();
     updateStatus("Running BFS from node " + std::to_string(startNodeId));
 
-    // כאן תוכל לחבר את האלגוריתם שלך
-    // לעת עתה, אנימציה פשוטה
-    std::vector<int> sequence;
-    for (size_t i = 0; i < visualNodes.size(); i++) {
-        sequence.push_back(i);
+    try {
+        // הפעלת האלגוריתם האמיתי
+        Graph bfs_tree = Algorithms::bfs(*logicalGraph, logicalGraph->nodes[startNodeId]);
+
+        std::vector<int> sequence;
+
+        // נבנה את הרצף על פי עץ ה-BFS שהוחזר
+        for (int i = 0; i < bfs_tree.num_vertices; ++i) {
+            if (bfs_tree.nodes[i]->color != "white") {
+                sequence.push_back(bfs_tree.nodes[i]->key);
+            }
+        }
+
+        startAnimation(sequence);
+        updateStatus("BFS completed - animating visit order");
+    } catch (...) {
+        updateStatus("Error during BFS execution");
     }
-    startAnimation(sequence);
 }
 
 void GraphVisualizer::runDFS(int startNodeId) {
