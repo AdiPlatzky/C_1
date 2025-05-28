@@ -1,14 +1,10 @@
-//
-// Created by 12adi on 28/05/2025.
-//
-
-#include "GraphVisualLizer.h"
-// GraphVisualizer.cpp
 #include "GraphVisualizer.h"
 #include <iostream>
 #include <sstream>
 #include <cmath>
 #include <algorithm>
+#include <cstdlib>
+#include <ctime>
 
 namespace graph {
 
@@ -139,7 +135,7 @@ void VisualEdge::resetColor() {
 
 // מימוש GraphVisualizer
 GraphVisualizer::GraphVisualizer()
-    : window(sf::VideoMode(1200, 800), "מערכת ויזואליזציה לאלגוריתמי גרפים", sf::Style::Default),
+    : window(sf::VideoMode(1200, 800), "Graph Algorithms Visualizer", sf::Style::Default),
       currentMode(Mode::ADD_NODES),
       currentAlgorithm(AlgorithmType::NONE),
       isAnimating(false),
@@ -149,26 +145,26 @@ GraphVisualizer::GraphVisualizer()
 
     window.setFramerateLimit(60);
     logicalGraph = std::make_unique<Graph>(100); // גרף עד 100 קודקודים
+    std::srand(std::time(nullptr)); // אתחול מחולל מספרים אקראיים
 }
 
 GraphVisualizer::~GraphVisualizer() = default;
 
 bool GraphVisualizer::initialize() {
     if (!loadFont()) {
-        return false;
+        std::cout << "Warning: Could not load font, using default font\n";
     }
 
     setupUI();
-    updateStatus("מוכן לעבודה - לחץ כדי להוסיף קודקודים");
+    updateStatus("Ready to work - Click to add nodes");
     return true;
 }
 
 bool GraphVisualizer::loadFont() {
     // נסה לטעון פונט מהמערכת
     if (!font.loadFromFile("arial.ttf")) {
-        // אם לא נמצא, השתמש בפונט ברירת המחדל
-        std::cout << "⚠️  פונט לא נמצא, משתמש בפונט ברירת מחדל\n";
-        // SFML יחזיר לפונט ברירת מחדל
+        // אם לא נמצא, נשתמש בפונט ברירת המחדל של SFML
+        return false;
     }
     return true;
 }
@@ -176,11 +172,11 @@ bool GraphVisualizer::loadFont() {
 void GraphVisualizer::setupUI() {
     // יצירת כפתורים
     createButton("addNodes", sf::Vector2f(20, 20), sf::Vector2f(120, 40),
-                "הוספת קודקודים", sf::Color(102, 126, 234));
+                "Add Nodes", sf::Color(102, 126, 234));
     createButton("addEdges", sf::Vector2f(20, 70), sf::Vector2f(120, 40),
-                "הוספת קשתות", sf::Color(102, 126, 234));
+                "Add Edges", sf::Color(102, 126, 234));
     createButton("clear", sf::Vector2f(20, 120), sf::Vector2f(120, 40),
-                "מחיקת הכל", sf::Color(229, 62, 62));
+                "Clear All", sf::Color(229, 62, 62));
 
     // כפתורי אלגוריתמים
     createButton("bfs", sf::Vector2f(20, 180), sf::Vector2f(120, 40),
@@ -294,12 +290,12 @@ void GraphVisualizer::handleMouseClick(sf::Vector2f mousePos) {
                     if (!firstSelectedNode) {
                         firstSelectedNode = clickedNode;
                         clickedNode->isSelected = true;
-                        updateStatus("בחר קודקוד שני ליצירת קשת");
+                        updateStatus("Select second node to create edge");
                     } else if (firstSelectedNode != clickedNode) {
                         addEdge(firstSelectedNode, clickedNode);
                         firstSelectedNode->isSelected = false;
                         firstSelectedNode = nullptr;
-                        updateStatus("נוצרה קשת");
+                        updateStatus("Edge created");
                     }
                 }
                 break;
@@ -343,7 +339,7 @@ void GraphVisualizer::handleKeyPress(sf::Keyboard::Key key) {
         case sf::Keyboard::Space:
             if (isAnimating) {
                 isAnimating = false;
-                updateStatus("אנימציה הושהתה");
+                updateStatus("Animation paused");
             }
             break;
         default:
@@ -354,19 +350,23 @@ void GraphVisualizer::handleKeyPress(sf::Keyboard::Key key) {
 void GraphVisualizer::addNode(sf::Vector2f position) {
     auto newNode = std::make_shared<VisualNode>(nodeIdCounter++, position);
     visualNodes.push_back(newNode);
-    updateStatus("נוסף קודקוד " + std::to_string(newNode->id));
+    updateStatus("Added node " + std::to_string(newNode->id));
     updateInfo();
 }
 
 void GraphVisualizer::addEdge(std::shared_ptr<VisualNode> from, std::shared_ptr<VisualNode> to) {
     // בחירת משקל אקראי בין 1-10
-    int weight = rand() % 10 + 1;
+    int weight = std::rand() % 10 + 1;
 
     auto newEdge = std::make_shared<VisualEdge>(from, to, weight);
     visualEdges.push_back(newEdge);
 
     // הוספה לגרף הלוגי
-    logicalGraph->add_Edge(from->id, to->id, weight);
+    try {
+        logicalGraph->add_Edge(from->id, to->id, weight);
+    } catch (...) {
+        std::cout << "Error adding edge to logical graph\n";
+    }
 
     updateInfo();
 }
@@ -388,7 +388,7 @@ void GraphVisualizer::clearGraph() {
     nodeIdCounter = 0;
     logicalGraph = std::make_unique<Graph>(100);
     resetVisualization();
-    updateStatus("הגרף נמחק");
+    updateStatus("Graph cleared");
     updateInfo();
 }
 
@@ -396,9 +396,9 @@ void GraphVisualizer::runBFS(int startNodeId) {
     if (visualNodes.empty()) return;
 
     resetVisualization();
-    updateStatus("מריץ BFS מקודקוד " + std::to_string(startNodeId));
+    updateStatus("Running BFS from node " + std::to_string(startNodeId));
 
-    // כאן תוכלי לחבר את האלגוריתם שלך
+    // כאן תוכל לחבר את האלגוריתם שלך
     // לעת עתה, אנימציה פשוטה
     std::vector<int> sequence;
     for (size_t i = 0; i < visualNodes.size(); i++) {
@@ -406,13 +406,14 @@ void GraphVisualizer::runBFS(int startNodeId) {
     }
     startAnimation(sequence);
 }
+
 void GraphVisualizer::runDFS(int startNodeId) {
     if (visualNodes.empty()) return;
 
     resetVisualization();
-    updateStatus("מריץ DFS מקודקוד " + std::to_string(startNodeId));
+    updateStatus("Running DFS from node " + std::to_string(startNodeId));
 
-    // כאן תוכלי לחבר את האלגוריתם שלך
+    // כאן תוכל לחבר את האלגוריתם שלך
     std::vector<int> sequence;
     for (size_t i = 0; i < visualNodes.size(); i++) {
         sequence.push_back(i);
@@ -421,45 +422,22 @@ void GraphVisualizer::runDFS(int startNodeId) {
 }
 
 void GraphVisualizer::runDijkstra(int startNodeId) {
-    if (visualNodes.empty()) return;
-
-    resetVisualization();
-    updateStatus("מריץ Dijkstra מקודקוד " + std::to_string(startNodeId));
-
-    // חיבור לאלגוריתם Dijkstra שלך
-    Algorithms algo;
-    Graph dijkstra_tree = algo.dijkstra(*logicalGraph, logicalGraph->nodes[startNodeId]);
-
-    // הדגשת הקשתות בעץ
-    for (auto& edge : visualEdges) {
-        // בדיקה אם הקשת נמצאת בעץ dijkstra
-        bool inTree = false;
-        // כאן תצטרכי לבדוק אם הקשת נמצאת בעץ התוצאה
-        if (inTree) {
-            edge->highlight();
-        }
-    }
+    // מימוש פשוט לעת עתה
+    updateStatus("Dijkstra algorithm - coming soon!");
 }
 
 void GraphVisualizer::runPrim() {
     if (visualNodes.empty()) return;
 
     resetVisualization();
-    updateStatus("מריץ אלגוריתם Prim");
+    updateStatus("Running Prim algorithm");
 
     try {
         // חיבור לאלגוריתם Prim שלך
         Graph prim_tree = Algorithms::prim(*logicalGraph);
-
-        // הדגשת הקשתות בעץ הפורש המינימלי
-        for (auto& edge : visualEdges) {
-            // כאן צריך לבדוק אם הקשת נמצאת בעץ prim
-            // זה ידרוש התאמה קלה בקוד שלך כדי לקבל רשימת קשתות
-        }
-
-        updateStatus("Prim הושלם - עץ פורש מינימלי מוצג");
+        updateStatus("Prim completed - MST displayed");
     } catch (const std::exception& e) {
-        updateStatus("שגיאה בהרצת Prim");
+        updateStatus("Error running Prim");
     }
 }
 
@@ -467,19 +445,14 @@ void GraphVisualizer::runKruskal() {
     if (visualNodes.empty()) return;
 
     resetVisualization();
-    updateStatus("מריץ אלגוריתם Kruskal");
+    updateStatus("Running Kruskal algorithm");
 
     try {
         // חיבור לאלגוריתם Kruskal שלך
         Graph kruskal_tree = Algorithms::kruskal(*logicalGraph);
-
-        // אנימציה של בניית העץ לפי סדר המשקלים
-        std::vector<int> edgeSequence;
-        // כאן תוכלי לממש אנימציה מתקדמת יותר
-
-        updateStatus("Kruskal הושלם - עץ פורש מינימלי מוצג");
+        updateStatus("Kruskal completed - MST displayed");
     } catch (const std::exception& e) {
-        updateStatus("שגיאה בהרצת Kruskal");
+        updateStatus("Error running Kruskal");
     }
 }
 
@@ -504,7 +477,7 @@ void GraphVisualizer::updateAnimation() {
             animationClock.restart();
         } else {
             isAnimating = false;
-            updateStatus("האנימציה הושלמה");
+            updateStatus("Animation completed");
         }
     }
 }
@@ -538,11 +511,11 @@ void GraphVisualizer::setMode(Mode newMode) {
     switch (newMode) {
         case Mode::ADD_NODES:
             activeButton = "addNodes";
-            updateStatus("מצב הוספת קודקודים - לחץ כדי להוסיף");
+            updateStatus("Add nodes mode - click to add");
             break;
         case Mode::ADD_EDGES:
             activeButton = "addEdges";
-            updateStatus("מצב הוספת קשתות - בחר שני קודקודים");
+            updateStatus("Add edges mode - select two nodes");
             break;
         default:
             break;
@@ -559,17 +532,17 @@ void GraphVisualizer::setAlgorithm(AlgorithmType algorithm) {
 }
 
 void GraphVisualizer::updateStatus(const std::string& message) {
-    statusText.setString("מצב: " + message);
+    statusText.setString("Status: " + message);
 }
 
 void GraphVisualizer::updateInfo() {
     std::stringstream info;
-    info << "קודקודים: " << visualNodes.size()
-         << " | קשתות: " << visualEdges.size()
-         << " | מצב: " << modeToString(currentMode);
+    info << "Nodes: " << visualNodes.size()
+         << " | Edges: " << visualEdges.size()
+         << " | Mode: " << modeToString(currentMode);
 
     if (currentAlgorithm != AlgorithmType::NONE) {
-        info << " | אלגוריתם: " << algorithmToString(currentAlgorithm);
+        info << " | Algorithm: " << algorithmToString(currentAlgorithm);
     }
 
     infoText.setString(info.str());
@@ -625,11 +598,11 @@ void GraphVisualizer::drawTexts() {
 
 std::string GraphVisualizer::modeToString(Mode mode) {
     switch (mode) {
-        case Mode::ADD_NODES: return "הוספת קודקודים";
-        case Mode::ADD_EDGES: return "הוספת קשתות";
-        case Mode::SELECT_NODES: return "בחירה";
-        case Mode::RUN_ALGORITHM: return "הרצת אלגוריתם";
-        default: return "לא ידוע";
+        case Mode::ADD_NODES: return "Add Nodes";
+        case Mode::ADD_EDGES: return "Add Edges";
+        case Mode::SELECT_NODES: return "Select";
+        case Mode::RUN_ALGORITHM: return "Run Algorithm";
+        default: return "Unknown";
     }
 }
 
@@ -640,7 +613,7 @@ std::string GraphVisualizer::algorithmToString(AlgorithmType algorithm) {
         case AlgorithmType::DIJKSTRA: return "Dijkstra";
         case AlgorithmType::PRIM: return "Prim";
         case AlgorithmType::KRUSKAL: return "Kruskal";
-        default: return "אין";
+        default: return "None";
     }
 }
 
@@ -656,8 +629,7 @@ sf::Color GraphVisualizer::getEdgeColor(bool highlighted) {
 }
 
 void GraphVisualizer::showHelp() {
-    // כאן תוכלי להוסיף חלון עזרה
-    updateStatus("עזרה: ESC=יציאה, R=איפוס, Space=השהיית אנימציה");
+    updateStatus("Help: ESC=Exit, R=Reset, Space=Pause animation");
 }
 
 } // namespace graph

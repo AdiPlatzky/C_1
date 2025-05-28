@@ -1,10 +1,10 @@
-// GraphVisualizer.h
 #pragma once
 #include <SFML/Graphics.hpp>
 #include <vector>
 #include <memory>
 #include <map>
 #include <string>
+#include <iostream>
 #include "Graph.h"
 #include "Algorithms.h"
 

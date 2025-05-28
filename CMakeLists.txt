@@ -13,16 +13,25 @@ else()
 endif()
 
 # חיפוש SFML
-find_package(sfml-graphics QUIET)
-find_package(sfml-window QUIET)
-find_package(sfml-system QUIET)
+find_package(PkgConfig)
+pkg_check_modules(SFML QUIET sfml-all>=2.5)
+
+if(NOT SFML_FOUND)
+    find_package(sfml-graphics QUIET)
+    find_package(sfml-window QUIET)
+    find_package(sfml-system QUIET)
+
+    if(sfml-graphics_FOUND AND sfml-window_FOUND AND sfml-system_FOUND)
+        set(SFML_FOUND TRUE)
+    endif()
+endif()
 
 # בדיקה אם SFML נמצא
-set(SFML_FOUND FALSE)
-if(sfml-graphics_FOUND AND sfml-window_FOUND AND sfml-system_FOUND)
-    set(SFML_FOUND TRUE)
+if(SFML_FOUND)
+    set(SFML_AVAILABLE TRUE)
     message(STATUS "✅ SFML נמצא - מערכת גרפית תיבנה")
 else()
+    set(SFML_AVAILABLE FALSE)
     message(WARNING "⚠️  SFML לא נמצא - רק מערכת קונסולית תיבנה")
     message(STATUS "התקן SFML עם: sudo apt-get install libsfml-dev (Ubuntu/Debian)")
     message(STATUS "או עם: brew install sfml (macOS)")
@@ -62,7 +71,7 @@ set(TEST_SOURCES
 
 # ===== יעד 1: המטלה המקורית (קונסולה) =====
 add_executable(OriginalGraphSystem
-        main_original.cpp  # גיבוי של ה-main המקורי
+        main_original.cpp  # גיבוי של ה-main המקורי אם יש
         ${CORE_SOURCES}
 )
 
@@ -72,66 +81,44 @@ add_executable(GraphTests
         ${TEST_SOURCES}
 )
 
-# ===== יעד 3: מערכת ויזואליזציה (אם SFML קיים) =====
-if(SFML_FOUND)
-    # קבצי GUI
-    set(GUI_SOURCES
-            GraphVisualizer.cpp
-            GraphVisualizer.h
-    )
-
-    add_executable(GraphVisualizerSystem
-            main.cpp  # ה-main החדש עם GUI
-            ${CORE_SOURCES}
-            ${GUI_SOURCES}
-    )
-
-    # קישור SFML
-    target_link_libraries(GraphVisualizerSystem
-            sfml-graphics
-            sfml-window
-            sfml-system
-    )
-
-    # הגדרות נוספות ל-SFML
-    target_compile_definitions(GraphVisualizerSystem PRIVATE
-            SFML_AVAILABLE=1
-    )
-
-    # העתקת פונטים אם יש
-    if(EXISTS "${CMAKE_SOURCE_DIR}/fonts/arial.ttf")
-        configure_file("${CMAKE_SOURCE_DIR}/fonts/arial.ttf"
-                "${CMAKE_BINARY_DIR}/arial.ttf" COPYONLY)
-    endif()
-
-    message(STATUS "✅ GraphVisualizerSystem נוצר עם תמיכה ב-SFML")
-endif()
-
-# ===== יעד 4: main היברידי (פועל תמיד) =====
-add_executable(GraphSystemHybrid
+# ===== יעד 3: מערכת ויזואליזציה (היברידית) =====
+add_executable(GraphVisualizerSystem
         main.cpp
         ${CORE_SOURCES}
 )
 
-# אם SFML קיים, הוסף תמיכה גרפית
-if(SFML_FOUND)
-    target_sources(GraphSystemHybrid PRIVATE
+# אם SFML זמין, הוסף תמיכה גרפית
+if(SFML_AVAILABLE)
+    target_sources(GraphVisualizerSystem PRIVATE
             GraphVisualizer.cpp
             GraphVisualizer.h
     )
-    target_link_libraries(GraphSystemHybrid
-            sfml-graphics
-            sfml-window
-            sfml-system
-    )
-    target_compile_definitions(GraphSystemHybrid PRIVATE
+
+    if(SFML_LIBRARIES)
+        # אם נמצא עם pkg-config
+        target_link_libraries(GraphVisualizerSystem ${SFML_LIBRARIES})
+        target_include_directories(GraphVisualizerSystem PRIVATE ${SFML_INCLUDE_DIRS})
+        target_compile_options(GraphVisualizerSystem PRIVATE ${SFML_CFLAGS_OTHER})
+    else()
+        # אם נמצא עם find_package
+        target_link_libraries(GraphVisualizerSystem
+                sfml-graphics
+                sfml-window
+                sfml-system
+        )
+    endif()
+
+    target_compile_definitions(GraphVisualizerSystem PRIVATE
             SFML_AVAILABLE=1
     )
+
+    message(STATUS "✅ GraphVisualizerSystem נוצר עם תמיכה ב-SFML")
 else()
     # אם אין SFML, הוסף דגל שיגיד למערכת לעבוד רק בקונסולה
-    target_compile_definitions(GraphSystemHybrid PRIVATE
+    target_compile_definitions(GraphVisualizerSystem PRIVATE
             CONSOLE_ONLY=1
     )
+    message(STATUS "📝 GraphVisualizerSystem נוצר במצב קונסולה בלבד")
 endif()
 
 # ===== יעדי BUILD נוחים =====
@@ -147,18 +134,10 @@ add_custom_target(run-tests
         COMMENT "מריץ את כל הבדיקות"
 )
 
-if(SFML_FOUND)
-    add_custom_target(run-gui
-            COMMAND GraphVisualizerSystem
-            DEPENDS GraphVisualizerSystem
-            COMMENT "מריץ את המערכת הגרפית"
-    )
-endif()
-
-add_custom_target(run-hybrid
-        COMMAND GraphSystemHybrid
-        DEPENDS GraphSystemHybrid
-        COMMENT "מריץ את המערכת ההיברידית"
+add_custom_target(run-visualizer
+        COMMAND GraphVisualizerSystem
+        DEPENDS GraphVisualizerSystem
+        COMMENT "מריץ את מערכת הויזואליזציה"
 )
 
 # ===== יעדי ניקוי =====
@@ -172,30 +151,24 @@ message(STATUS "==========================================")
 message(STATUS "📊 סיכום מערכת הויזואליזציה לגרפים")
 message(STATUS "==========================================")
 message(STATUS "יעדים זמינים:")
-message(STATUS "  • OriginalGraphSystem    - המטלה המקורית")
-message(STATUS "  • GraphTests            - מערכת בדיקות")
-message(STATUS "  • GraphSystemHybrid     - מערכת היברידית")
+message(STATUS "  • GraphVisualizerSystem - מערכת ויזואליזציה")
+message(STATUS "  • GraphTests           - מערכת בדיקות")
+message(STATUS "  • OriginalGraphSystem  - המטלה המקורית")
 
-if(SFML_FOUND)
-    message(STATUS "  • GraphVisualizerSystem - מערכת גרפית מלאה ✅")
+if(SFML_AVAILABLE)
+    message(STATUS "  ✅ תמיכה ב-GUI מופעלת")
     message(STATUS "")
     message(STATUS "📝 הרצה:")
-    message(STATUS "  make run-gui       # מערכת גרפית")
-    message(STATUS "  make run-tests     # בדיקות")
-    message(STATUS "  make run-original  # מטלה מקורית")
+    message(STATUS "  make run-visualizer  # מערכת ויזואליזציה")
+    message(STATUS "  make run-tests       # בדיקות")
+    message(STATUS "  make run-original    # מטלה מקורית")
 else()
-    message(STATUS "  • GraphVisualizerSystem - לא זמין (חסר SFML) ❌")
+    message(STATUS "  ❌ GUI לא זמין (חסר SFML)")
     message(STATUS "")
     message(STATUS "📝 הרצה:")
-    message(STATUS "  make run-hybrid    # מערכת קונסולית")
-    message(STATUS "  make run-tests     # בדיקות")
-    message(STATUS "  make run-original  # מטלה מקורית")
+    message(STATUS "  make run-visualizer  # מערכת קונסולית")
+    message(STATUS "  make run-tests       # בדיקות")
+    message(STATUS "  make run-original    # מטלה מקורית")
 endif()
 
 message(STATUS "==========================================")
-
-# הגדרות נוספות לדיבוג
-if(CMAKE_BUILD_TYPE STREQUAL "Debug")
-    message(STATUS "🔧 מצב Debug מופעל")
-    add_compile_definitions(DEBUG_MODE=1)
-endif()

@@ -1,27 +1,37 @@
-// main.cpp - נקודת הכניסה החדשה למערכת
+// main.cpp - נקודת הכניסה למערכת הויזואליזציה
 #include <iostream>
 #include <string>
-#include "GraphVisualLizer.h"
+
+// בדיקה אם SFML זמין
+#ifdef SFML_AVAILABLE
+#include "GraphVisualizer.h"
+#endif
+
 #include "Graph.h"
 #include "Algorithms.h"
 
 void showWelcomeMessage() {
     std::cout << "======================================\n";
-    std::cout << "   🎯 מערכת ויזואליזציה לגרפים   \n";
+    std::cout << "   🎯 Graph Algorithms Visualizer   \n";
     std::cout << "======================================\n";
-    std::cout << "מפותח על ידי: [השם שלך]\n";
-    std::cout << "מבוסס על SFML עבור גרפיקה מתקדמת\n\n";
-    std::cout << "הוראות שימוש:\n";
-    std::cout << "- לחץ עם העכבר כדי להוסיף קודקודים\n";
-    std::cout << "- בחר שני קודקודים כדי ליצור קשת\n";
-    std::cout << "- השתמש בכפתורים כדי להריץ אלגוריתמים\n";
-    std::cout << "- לחץ ESC כדי לצאת\n\n";
-    std::cout << "פותח עם אהבה לאלגוריתמי גרפים! 💙\n";
+    std::cout << "Developed by: Your Name\n";
+    std::cout << "Based on SFML for advanced graphics\n\n";
+
+#ifdef SFML_AVAILABLE
+    std::cout << "Instructions:\n";
+    std::cout << "- Click with mouse to add nodes\n";
+    std::cout << "- Select two nodes to create an edge\n";
+    std::cout << "- Use buttons to run algorithms\n";
+    std::cout << "- Press ESC to exit\n\n";
+    std::cout << "Developed with love for graph algorithms! 💙\n";
+#else
+    std::cout << "SFML not available - running console demo only\n";
+#endif
     std::cout << "======================================\n\n";
 }
 
 void runConsoleDemo() {
-    std::cout << "הדגמה קונסולית מהירה של האלגוריתמים:\n\n";
+    std::cout << "Quick console demo of algorithms:\n\n";
 
     using namespace graph;
 
@@ -36,20 +46,18 @@ void runConsoleDemo() {
     g.add_Edge(2, 4, 3);
     g.add_Edge(3, 4, 2);
 
-    std::cout << "גרף לדוגמה נוצר עם 5 קודקודים:\n";
+    std::cout << "Sample graph created with 5 nodes:\n";
     g.print_graph();
     std::cout << "\n";
 
     // הרצת אלגוריתמים
-    Algorithms algo;
-
-    std::cout << "🔍 BFS Tree מקודקוד 0:\n";
-    Graph bfs_tree = algo.bfs(g, g.nodes[0]);
+    std::cout << "🔍 BFS Tree from node 0:\n";
+    Graph bfs_tree = Algorithms::bfs(g, g.nodes[0]);
     bfs_tree.print_graph();
     std::cout << "\n";
 
-    std::cout << "🌊 DFS Tree מקודקוד 0:\n";
-    Graph dfs_tree = algo.dfs(g, g.nodes[0]);
+    std::cout << "🌊 DFS Tree from node 0:\n";
+    Graph dfs_tree = Algorithms::dfs(g, g.nodes[0]);
     dfs_tree.print_graph();
     std::cout << "\n";
 
@@ -79,10 +87,10 @@ int main(int argc, char* argv[]) {
         } else if (arg == "--no-gui" || arg == "-ng") {
             showGUI = false;
         } else if (arg == "--help" || arg == "-h") {
-            std::cout << "אפשרויות:\n";
-            std::cout << "  --console, -c     הצג הדגמה קונסולית\n";
-            std::cout << "  --no-gui, -ng     ללא ממשק גרפי\n";
-            std::cout << "  --help, -h        הצג עזרה זו\n";
+            std::cout << "Options:\n";
+            std::cout << "  --console, -c     Show console demo\n";
+            std::cout << "  --no-gui, -ng     No GUI\n";
+            std::cout << "  --help, -h        Show this help\n";
             return 0;
         }
     }
@@ -91,62 +99,41 @@ int main(int argc, char* argv[]) {
         runConsoleDemo();
     }
 
+#ifdef SFML_AVAILABLE
     if (showGUI) {
         try {
-            std::cout << "מפעיל מערכת ויזואליזציה גרפית...\n";
+            std::cout << "Starting graphical visualization system...\n";
 
             graph::GraphVisualizer visualizer;
 
             if (!visualizer.initialize()) {
-                std::cerr << "❌ שגיאה: לא ניתן לאתחל את המערכת הגרפית\n";
-                std::cerr << "ודא שמותקן SFML במערכת שלך\n";
+                std::cerr << "❌ Error: Could not initialize graphical system\n";
+                std::cerr << "Make sure SFML is properly installed\n";
                 return -1;
             }
 
-            std::cout << "✅ המערכת הגרפית הופעלה בהצלחה!\n";
-            std::cout << "חלון הויזואליזציה נפתח...\n\n";
+            std::cout << "✅ Graphical system started successfully!\n";
+            std::cout << "Visualization window opening...\n\n";
 
             // הרצת הלולאה הראשית
             visualizer.run();
 
         } catch (const std::exception& e) {
-            std::cerr << "❌ שגיאה בהפעלת המערכת: " << e.what() << std::endl;
+            std::cerr << "❌ Error starting system: " << e.what() << std::endl;
             return -1;
         }
     }
+#else
+    if (showGUI) {
+        std::cout << "❌ GUI requested but SFML not available\n";
+        std::cout << "Install SFML and recompile to use GUI mode\n";
+        std::cout << "Running console demo instead:\n\n";
+        runConsoleDemo();
+    }
+#endif
 
-    std::cout << "\n🎉 תודה שהשתמשת במערכת הויזואליזציה!\n";
-    std::cout << "המערכת נסגרה בהצלחה.\n";
+    std::cout << "\n🎉 Thanks for using the visualization system!\n";
+    std::cout << "System closed successfully.\n";
 
     return 0;
 }
-// #include <iostream>
-// #include "Graph.h"
-// int main() {
-//     using namespace graph;
-//     try {
-//         // יוצרים גרף עם 5 צמתים
-//         Graph g(5);
-//
-//         // מוסיפים קשתות
-//         g.add_Edge(0, 1);
-//         g.add_Edge(0, 2);
-//         g.add_Edge(1, 3);
-//         g.add_Edge(2, 4);
-//         g.add_Edge(3, 4);
-//
-//         std::cout << "befor the delete:" << std::endl;
-//         g.print_graph();
-//
-//         // מוחקים קשת
-//         g.remove_Edge(0, 1);
-//
-//         std::cout << "after the delete:" << std::endl;
-//         g.print_graph();
-//
-//     } catch (const char* msg) {
-//         std::cerr << "error: " << msg << std::endl;
-//     }
-//
-//     return 0;
-// }
