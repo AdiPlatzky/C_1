@@ -1,27 +1,29 @@
 /usr/bin/cmake -DCMAKE_BUILD_TYPE=Debug -G "Unix Makefiles" -S /mnt/c/Users/12adi/Desktop/לימודים/untitled/C_1 -B /mnt/c/Users/12adi/Desktop/לימודים/untitled/C_1/cmake-build-debug-wsl
--- The CXX compiler identification is GNU 13.3.0
--- Detecting CXX compiler ABI info
--- Detecting CXX compiler ABI info - done
--- Check for working CXX compiler: /usr/bin/c++ - skipped
--- Detecting CXX compile features
--- Detecting CXX compile features - done
--- Found PkgConfig: /usr/bin/pkg-config (found version "1.8.1") 
--- ✅ SFML נמצא - מערכת גרפית תיבנה
--- ✅ GraphVisualizerSystem נוצר עם תמיכה ב-SFML
+-- ✅ SFML נמצא - מערכת המשחק התחולית תיבנה
+-- ✅ GraphAlgorithmsGame נוצר עם תמיכה במשחק אינטראקטיבי
 -- ==========================================
--- 📊 סיכום מערכת הויזואליזציה לגרפים
+-- 🎯 Graph Algorithms Educational Game System
 -- ==========================================
 -- יעדים זמינים:
---   • GraphVisualizerSystem - מערכת ויזואליזציה
---   • GraphTests           - מערכת בדיקות
---   • OriginalGraphSystem  - המטלה המקורית
---   ✅ תמיכה ב-GUI מופעלת
+--   • GraphAlgorithmsGame    - המערכת החינוכי
+--   • GraphTests             - מערכת בדיקות
+--   ✅ תמיכה במשחק אינטראקטיבי מופעלת
+-- 
+-- 🎮 מאפיינים חינוכיים:
+--   • ויזואליזציה אינטראקטיבית של אלגוריתמים
+--   • ביצוע צעד אחר צעד עם הסברים
+--   • הצגת מבני נתונים (תורים, מחסניות)
+--   • אנימציות צבעוניות ומושכות
+--   • מותאם לילדים ולסטודנטים
 -- 
 -- 📝 הרצה:
---   make run-visualizer  # מערכת ויזואליזציה
---   make run-tests       # בדיקות
---   make run-original    # מטלה מקורית
+--   make run-game           # מערכת המשחק המלאה
+--   make run-console-demo   # הדגמה בקונסולה
+--   make run-tests          # בדיקות
+-- 
+-- 🎓 מערכת חינוכית לאלגוריתמי גרפים
+--    מושלמת לילדים, סטודנטים ומורים!
 -- ==========================================
--- Configuring done (1.6s)
--- Generating done (0.3s)
+-- Configuring done (0.1s)
+-- Generating done (0.8s)
 -- Build files have been written to: /mnt/c/Users/12adi/Desktop/לימודים/untitled/C_1/cmake-build-debug-wsl

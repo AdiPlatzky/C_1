@@ -1,7 +1,5 @@
 cmake_minimum_required(VERSION 3.16)
-project(GraphVisualizerSystem LANGUAGES CXX)
-#include_directories(${CMAKE_SOURCE_DIR})
-
+project(GraphVisualizerGameSystem LANGUAGES CXX)
 
 # הגדרות C++
 set(CMAKE_CXX_STANDARD 20)
@@ -31,12 +29,13 @@ endif()
 # בדיקה אם SFML נמצא
 if(SFML_FOUND)
     set(SFML_AVAILABLE TRUE)
-    message(STATUS "✅ SFML נמצא - מערכת גרפית תיבנה")
+    message(STATUS "✅ SFML נמצא - מערכת המשחק התחולית תיבנה")
 else()
     set(SFML_AVAILABLE FALSE)
     message(WARNING "⚠️  SFML לא נמצא - רק מערכת קונסולית תיבנה")
     message(STATUS "התקן SFML עם: sudo apt-get install libsfml-dev (Ubuntu/Debian)")
     message(STATUS "או עם: brew install sfml (macOS)")
+    message(STATUS "או עם: vcpkg install sfml (Windows)")
 endif()
 
 # קבצי מקור בסיסיים (המטלה המקורית)
@@ -58,6 +57,12 @@ set(CORE_SOURCES
         EdgeList.h
 )
 
+# קבצי המערכת החדשה (המשחק החינוכי)
+set(GAME_SOURCES
+        GraphGameVisualizer.h
+        GraphGameVisualizer.cpp
+)
+
 # קבצי בדיקות
 set(TEST_SOURCES
         tests/algorithms_test.cpp
@@ -69,79 +74,81 @@ set(TEST_SOURCES
         tests/edgeList_test.cpp
         tests/memory_test.cpp
         tests/graph_test.cpp
+        FontManager.h
 )
 
-### ===== יעד 1: המטלה המקורית (קונסולה) =====
-#add_executable(OriginalGraphSystem
-#        main_original.cpp  # גיבוי של ה-main המקורי אם יש
-#        ${CORE_SOURCES}
-#)
-
-# ===== יעד 2: מערכת הבדיקות =====
+# ===== יעד 1: מערכת הבדיקות =====
 add_executable(GraphTests
         ${CORE_SOURCES}
         ${TEST_SOURCES}
 )
 
-# ===== יעד 3: מערכת ויזואליזציה (היברידית) =====
-add_executable(GraphVisualizerSystem
+# ===== יעד 2: מערכת המשחק החינוכי =====
+add_executable(GraphAlgorithmsGame
         main.cpp
         ${CORE_SOURCES}
-        Button.h
 )
 
-## אם SFML זמין, הוסף תמיכה גרפית
-#if(SFML_AVAILABLE)
-#    target_sources(GraphVisualizerSystem PRIVATE
-#            GUI/GraphVisualizer.cpp
-#            GUI/GraphVisualizer.h
-#    )
+# הוספת קבצי המשחק אם SFML זמין
+if(SFML_AVAILABLE)
+    target_sources(GraphAlgorithmsGame PRIVATE
+            ${GAME_SOURCES}
+    )
 
     if(SFML_LIBRARIES)
         # אם נמצא עם pkg-config
-        target_link_libraries(GraphVisualizerSystem ${SFML_LIBRARIES})
-        target_include_directories(GraphVisualizerSystem PRIVATE ${SFML_INCLUDE_DIRS})
-        target_compile_options(GraphVisualizerSystem PRIVATE ${SFML_CFLAGS_OTHER})
+        target_link_libraries(GraphAlgorithmsGame ${SFML_LIBRARIES})
+        target_include_directories(GraphAlgorithmsGame PRIVATE ${SFML_INCLUDE_DIRS})
+        target_compile_options(GraphAlgorithmsGame PRIVATE ${SFML_CFLAGS_OTHER})
     else()
         # אם נמצא עם find_package
-        target_link_libraries(GraphVisualizerSystem
+        target_link_libraries(GraphAlgorithmsGame
                 sfml-graphics
                 sfml-window
                 sfml-system
         )
     endif()
 
-    target_compile_definitions(GraphVisualizerSystem PRIVATE
+    target_compile_definitions(GraphAlgorithmsGame PRIVATE
             SFML_AVAILABLE=1
     )
 
-    message(STATUS "✅ GraphVisualizerSystem נוצר עם תמיכה ב-SFML")
-if()
+    message(STATUS "✅ GraphAlgorithmsGame נוצר עם תמיכה במשחק אינטראקטיבי")
+else()
     # אם אין SFML, הוסף דגל שיגיד למערכת לעבוד רק בקונסולה
-    target_compile_definitions(GraphVisualizerSystem PRIVATE
+    target_compile_definitions(GraphAlgorithmsGame PRIVATE
             CONSOLE_ONLY=1
     )
-    message(STATUS "📝 GraphVisualizerSystem נוצר במצב קונסולה בלבד")
+    message(STATUS "📝 GraphAlgorithmsGame נוצר במצב קונסולה בלבד")
 endif()
 
 # ===== יעדי BUILD נוחים =====
-add_custom_target(run-original
-        COMMAND OriginalGraphSystem
-        DEPENDS OriginalGraphSystem
-        COMMENT "מריץ את המטלה המקורית"
-)
-
 add_custom_target(run-tests
         COMMAND GraphTests
         DEPENDS GraphTests
         COMMENT "מריץ את כל הבדיקות"
 )
 
-add_custom_target(run-visualizer
-        COMMAND GraphVisualizerSystem
-        DEPENDS GraphVisualizerSystem
-        COMMENT "מריץ את מערכת הויזואליזציה"
+add_custom_target(run-game
+        COMMAND GraphAlgorithmsGame
+        DEPENDS GraphAlgorithmsGame
+        COMMENT "מריץ את מערכת המשחק החינוכי"
 )
+
+add_custom_target(run-console-demo
+        COMMAND GraphAlgorithmsGame --console
+        DEPENDS GraphAlgorithmsGame
+        COMMENT "מריץ הדגמה בקונסולה"
+)
+
+# ===== יעדי התקנה =====
+if(SFML_AVAILABLE)
+    # העתקת קבצי פונט נדרשים
+    add_custom_command(TARGET GraphAlgorithmsGame POST_BUILD
+            COMMAND ${CMAKE_COMMAND} -E echo "Looking for font files..."
+            COMMENT "בדיקת זמינות קבצי פונט"
+    )
+endif()
 
 # ===== יעדי ניקוי =====
 add_custom_target(clean-all
@@ -149,29 +156,65 @@ add_custom_target(clean-all
         COMMENT "מנקה את כל קבצי ה-build"
 )
 
+# ===== הגדרות מיוחדות לפלטפורמות שונות =====
+if(WIN32)
+    # Windows specific settings
+    if(SFML_AVAILABLE)
+        # העתקת DLL files אם נדרש
+        add_custom_command(TARGET GraphAlgorithmsGame POST_BUILD
+                COMMAND ${CMAKE_COMMAND} -E echo "Windows build with SFML support"
+        )
+    endif()
+elseif(APPLE)
+    # macOS specific settings
+    if(SFML_AVAILABLE)
+        set_target_properties(GraphAlgorithmsGame PROPERTIES
+                MACOSX_BUNDLE TRUE
+                MACOSX_BUNDLE_INFO_STRING "Graph Algorithms Educational Game"
+                MACOSX_BUNDLE_BUNDLE_NAME "GraphAlgorithmsGame"
+                MACOSX_BUNDLE_BUNDLE_VERSION "1.0"
+                MACOSX_BUNDLE_SHORT_VERSION_STRING "1.0"
+        )
+    endif()
+endif()
+
 # ===== הדפסת מידע =====
 message(STATUS "==========================================")
-message(STATUS "📊 סיכום מערכת הויזואליזציה לגרפים")
+message(STATUS "🎯 Graph Algorithms Educational Game System")
 message(STATUS "==========================================")
 message(STATUS "יעדים זמינים:")
-message(STATUS "  • GraphVisualizerSystem - מערכת ויזואליזציה")
-message(STATUS "  • GraphTests           - מערכת בדיקות")
-message(STATUS "  • OriginalGraphSystem  - המטלה המקורית")
+message(STATUS "  • GraphAlgorithmsGame    - המערכת החינוכי")
+message(STATUS "  • GraphTests             - מערכת בדיקות")
 
 if(SFML_AVAILABLE)
-    message(STATUS "  ✅ תמיכה ב-GUI מופעלת")
+    message(STATUS "  ✅ תמיכה במשחק אינטראקטיבי מופעלת")
+    message(STATUS "")
+    message(STATUS "🎮 מאפיינים חינוכיים:")
+    message(STATUS "  • ויזואליזציה אינטראקטיבית של אלגוריתמים")
+    message(STATUS "  • ביצוע צעד אחר צעד עם הסברים")
+    message(STATUS "  • הצגת מבני נתונים (תורים, מחסניות)")
+    message(STATUS "  • אנימציות צבעוניות ומושכות")
+    message(STATUS "  • מותאם לילדים ולסטודנטים")
     message(STATUS "")
     message(STATUS "📝 הרצה:")
-    message(STATUS "  make run-visualizer  # מערכת ויזואליזציה")
-    message(STATUS "  make run-tests       # בדיקות")
-    message(STATUS "  make run-original    # מטלה מקורית")
+    message(STATUS "  make run-game           # מערכת המשחק המלאה")
+    message(STATUS "  make run-console-demo   # הדגמה בקונסולה")
+    message(STATUS "  make run-tests          # בדיקות")
 else()
     message(STATUS "  ❌ GUI לא זמין (חסר SFML)")
     message(STATUS "")
     message(STATUS "📝 הרצה:")
-    message(STATUS "  make run-visualizer  # מערכת קונסולית")
-    message(STATUS "  make run-tests       # בדיקות")
-    message(STATUS "  make run-original    # מטלה מקורית")
+    message(STATUS "  make run-game           # מערכת קונסולית")
+    message(STATUS "  make run-console-demo   # הדגמה בקונסולה")
+    message(STATUS "  make run-tests          # בדיקות")
+    message(STATUS "")
+    message(STATUS "💡 להתקנת SFML:")
+    message(STATUS "  Ubuntu/Debian: sudo apt-get install libsfml-dev")
+    message(STATUS "  macOS: brew install sfml")
+    message(STATUS "  Windows: vcpkg install sfml")
 endif()
 
+message(STATUS "")
+message(STATUS "🎓 מערכת חינוכית לאלגוריתמי גרפים")
+message(STATUS "   מושלמת לילדים, סטודנטים ומורים!")
 message(STATUS "==========================================")
