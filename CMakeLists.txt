@@ -1,5 +1,7 @@
 cmake_minimum_required(VERSION 3.16)
 project(GraphVisualizerSystem LANGUAGES CXX)
+#include_directories(${CMAKE_SOURCE_DIR})
+
 
 # הגדרות C++
 set(CMAKE_CXX_STANDARD 20)
@@ -69,7 +71,7 @@ set(TEST_SOURCES
         tests/graph_test.cpp
 )
 
-## ===== יעד 1: המטלה המקורית (קונסולה) =====
+### ===== יעד 1: המטלה המקורית (קונסולה) =====
 #add_executable(OriginalGraphSystem
 #        main_original.cpp  # גיבוי של ה-main המקורי אם יש
 #        ${CORE_SOURCES}
@@ -85,14 +87,15 @@ add_executable(GraphTests
 add_executable(GraphVisualizerSystem
         main.cpp
         ${CORE_SOURCES}
+        Button.h
 )
 
-# אם SFML זמין, הוסף תמיכה גרפית
-if(SFML_AVAILABLE)
-    target_sources(GraphVisualizerSystem PRIVATE
-            GraphVisualizer.cpp
-            GraphVisualizer.h
-    )
+## אם SFML זמין, הוסף תמיכה גרפית
+#if(SFML_AVAILABLE)
+#    target_sources(GraphVisualizerSystem PRIVATE
+#            GUI/GraphVisualizer.cpp
+#            GUI/GraphVisualizer.h
+#    )
 
     if(SFML_LIBRARIES)
         # אם נמצא עם pkg-config
@@ -113,7 +116,7 @@ if(SFML_AVAILABLE)
     )
 
     message(STATUS "✅ GraphVisualizerSystem נוצר עם תמיכה ב-SFML")
-else()
+if()
     # אם אין SFML, הוסף דגל שיגיד למערכת לעבוד רק בקונסולה
     target_compile_definitions(GraphVisualizerSystem PRIVATE
             CONSOLE_ONLY=1
