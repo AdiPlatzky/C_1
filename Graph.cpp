@@ -2,12 +2,10 @@
 // 12adi45@gmail.com
 //
 #include "Graph.h"
-#include <iostream>
+#include <cstdio>  // במקום <iostream>
 
 namespace graph
 {
-    // בנאי - יצירת גרף חדש עם n קודקודים וללא קשתות
-    // מאתחל גם את מערך הקודקודים וגם את רשימות השכנויות כ-nullptr
     Graph::Graph(int num_vertices): num_vertices(num_vertices)
     {
         nodes = new Node_V*[num_vertices];
@@ -19,8 +17,6 @@ namespace graph
             adjacency_list[i] = nullptr;
     }
 
-    // הורס את כל מבני הנתונים של הגרף
-    // משחרר את מערך הקודקודים ואת כל רשימות השכנויות
     Graph::~Graph()
     {
         for (int i = 0; i < num_vertices; i++) {
@@ -34,8 +30,6 @@ namespace graph
         delete[] nodes;
     }
 
-    // מוסיף קשת דו-כיוונית בין שני קודקודים עם משקל
-    // מוסיף את הקשת גם למקור וגם ליעד ברשימות השכנויות
     void Graph::add_Edge(int from, int to, int weight) const
     {
         if (from < 0 || from >= num_vertices || to < 0 || to >= num_vertices)
@@ -45,8 +39,6 @@ namespace graph
         adjacency_list[to] = new Neighbor(from, weight, adjacency_list[to]);
     }
 
-    // מסיר קשת דו-כיוונית בין שני קודקודים (אם קיימת)
-    // בודק האם הקשת קיימת ומסיר אותה משני הצדדים
     void Graph::remove_Edge(int from, int to) const
     {
         if (from < 0 || from >= num_vertices || to < 0 || to >= num_vertices)
@@ -54,21 +46,17 @@ namespace graph
 
         bool removed1 = false, removed2 = false;
 
-        // הסרה מרשימת השכנים של from
         Neighbor* next_v = adjacency_list[from];
         Neighbor* prev = nullptr;
         while (next_v != nullptr)
         {
-            if (next_v ->dest == to)
+            if (next_v->dest == to)
             {
                 if (prev == nullptr)
-                {
                     adjacency_list[from] = next_v->next;
-                }
                 else
-                {
-                    prev-> next = next_v->next;
-                }
+                    prev->next = next_v->next;
+
                 delete next_v;
                 removed1 = true;
                 break;
@@ -77,21 +65,17 @@ namespace graph
             next_v = next_v->next;
         }
 
-        // הסרה מרשימת השכנים של to
         Neighbor* revers_v = adjacency_list[to];
         Neighbor* revers_prev = nullptr;
         while (revers_v != nullptr)
         {
-            if (revers_v ->dest == from)
+            if (revers_v->dest == from)
             {
                 if (revers_prev == nullptr)
-                {
                     adjacency_list[to] = revers_v->next;
-                }
                 else
-                {
-                    revers_prev-> next = revers_v->next;
-                }
+                    revers_prev->next = revers_v->next;
+
                 delete revers_v;
                 removed2 = true;
                 break;
@@ -104,8 +88,6 @@ namespace graph
             throw "Edge does not exist";
     }
 
-    // מדפיס את כל הקשתות בגרף (ללא כפילויות)
-    // מדפיס רק קשתות מהקודקודים עם מזהה קטן יותר לגדול יותר
     void Graph::print_graph() const
     {
         for (int i = 0; i < num_vertices; ++i)
@@ -115,10 +97,11 @@ namespace graph
             {
                 if (temp_v->dest > i)
                 {
-                    std::cout << "e{(" << i <<","<< temp_v->dest << ")," << temp_v->weight <<"}" << std::endl;
+                    // במקום std::cout
+                    printf("e{(%d,%d),%d}\n", i, temp_v->dest, temp_v->weight);
                 }
                 temp_v = temp_v->next;
             }
         }
     }
-} // graph
+} // namespace graph

@@ -5,7 +5,7 @@
 #ifndef ALGORITHMS_H
 #define ALGORITHMS_H
 #include <string>
-
+#include <cstring>
 #include "Graph.h"
 
 namespace graph
@@ -18,9 +18,17 @@ namespace graph
         int d_v;
         int f_v;
         Node_V* parent;
-        std::string color;
+        char color[6];
 
-        Node(Node_V* node_v, int d_v, Node_V* parent) : node_v(node_v), d_v(d_v), f_v(0), parent(parent), color("") {}
+        Node(Node_V* node_v, int d_v, Node_V* parent)
+            : node_v(node_v), d_v(d_v), f_v(0), parent(parent) {
+            color[0] = '\0';
+        }
+
+        void setColor(const char* c) {
+            strncpy(color, c, 5);
+            color[5] = '\0';
+        }
     };
 
 class Algorithms {
@@ -87,6 +95,8 @@ class Algorithms {
     * @return The MST graph built using Kruskal's method.
     */
     static Graph kruskal(const Graph& graph);
+
+    static Graph prim(const Graph & graph, Node_V * start);
 };
 
 } // graph

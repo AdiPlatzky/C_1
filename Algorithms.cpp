@@ -22,7 +22,7 @@ namespace graph {
         for (int i = 0; i < n; i++) {
             nodes[i] = new Node(graph.nodes[i], INF, nullptr);
             if (print_white)
-                nodes[i]->color = "white";
+                nodes[i]->setColor("white");
         }
         return nodes;
     }
@@ -43,7 +43,7 @@ namespace graph {
 
         int source_id = source->get_id();
         nodes[source_id]->d_v = 0;
-        nodes[source_id]->color = "gray";
+        nodes[source_id]->setColor( "gray");
 
         Queue Q;
         Q.enqueue(source);
@@ -57,9 +57,9 @@ namespace graph {
             while (neighbor != nullptr)
             {
                 int v_id = neighbor->dest;
-                if (nodes[v_id]->color == "white")
+                if (strcmp(nodes[v_id]->color, "white") == 0)
                 {
-                    nodes[v_id]->color = "gray";
+                    nodes[v_id]->setColor("gray");
                     nodes[v_id]->d_v = nodes[u_id]-> d_v+1;
                     nodes[v_id]->parent = u;
                     Q.enqueue(graph.nodes[v_id]);
@@ -68,7 +68,7 @@ namespace graph {
                 }
                 neighbor = neighbor->next;
             }
-            nodes[u_id]->color = "black";
+            nodes[u_id]->setColor("black");
         }
 
         cleanup_Nodes(nodes, n);
@@ -84,11 +84,11 @@ namespace graph {
         time_global = 0;
 
         int source_id = source->get_id();
-        if (nodes[source_id]->color == "white") {
+        if (strcmp(nodes[source_id]->color, "white") == 0) {
             DFS_visit(source_id,graph,nodes,dfs_tree);
         }
         for (int i = 0; i < n; ++i)
-            if (nodes[i]->color == "white")
+            if (strcmp(nodes[i]->color, "white") == 0)
                 DFS_visit(i, graph, nodes, dfs_tree);
 
         cleanup_Nodes(nodes, n);
@@ -98,13 +98,13 @@ namespace graph {
 
     void Algorithms::DFS_visit(int u_id, const Graph &graph, Node **node, Graph& dfs_tree)
     {
-        node[u_id]->color = "gray";
+        node[u_id]->setColor("gray");
         node[u_id]->d_v = time_global++;
 
         Neighbor* neighbor = graph.adjacency_list[u_id];
         while (neighbor != nullptr) {
             int v_id = neighbor->dest;
-            if (node[v_id]->color == "white") {
+            if (strcmp(node[v_id]->color, "white") == 0) {
                 node[v_id]->parent = graph.nodes[u_id];
                 DFS_visit(v_id, graph, node, dfs_tree);
 
@@ -114,7 +114,7 @@ namespace graph {
             neighbor = neighbor->next;
         }
 
-        node[u_id]->color = "black";
+        node[u_id]->setColor("black");
         node[u_id]->f_v = time_global++;
     }
 
@@ -224,7 +224,7 @@ namespace graph {
           Node_V* u = Q.extractMin();
           int u_id = u->get_id();
 
-          nodes[u_id]->color = "black";
+          nodes[u_id]->setColor("black");
 
           Neighbor* neighbor = graph.adjacency_list[u_id];
           while (neighbor != nullptr)
@@ -232,7 +232,7 @@ namespace graph {
             int v_id = neighbor->dest;
             int weight = neighbor->weight;
 
-            if(nodes[v_id]->color != "black" && weight < nodes[v_id]->d_v)
+            if(strcmp(nodes[v_id]->color, "black") != 0 && weight < nodes[v_id]->d_v)
             {
               nodes[v_id]->d_v = weight;
               nodes[v_id]->parent = u;
